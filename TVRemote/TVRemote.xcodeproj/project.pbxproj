@@ -1,0 +1,478 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A101 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B101 /* AppDelegate.swift */; };
+		A102 /* TVDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B102 /* TVDevice.swift */; };
+		A103 /* TVRemoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B103 /* TVRemoteService.swift */; };
+		A104 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B104 /* Theme.swift */; };
+		A105 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B105 /* ScanViewController.swift */; };
+		A106 /* ConnectingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B106 /* ConnectingViewController.swift */; };
+		A107 /* RemoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B107 /* RemoteViewController.swift */; };
+		A108 /* RemoteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B108 /* RemoteButton.swift */; };
+		A109 /* SectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B109 /* SectionViews.swift */; };
+		A110 /* ScanViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B110 /* ScanViews.swift */; };
+		ATV001B /* CertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV001F /* CertManager.swift */; };
+		ATV002B /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV002F /* DeepLink.swift */; };
+		ATV003B /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV003F /* Direction.swift */; };
+		ATV004B /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV004F /* Key.swift */; };
+		ATV005B /* KeyPress.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV005F /* KeyPress.swift */; };
+		ATV006B /* CryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV006F /* CryptoManager.swift */; };
+		ATV007B /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV007F /* Errors.swift */; };
+		ATV008B /* AndroidTVConfigurationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV008F /* AndroidTVConfigurationMessage.swift */; };
+		ATV009B /* CommandNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV009F /* CommandNetwork.swift */; };
+		ATV010B /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV010F /* Ping.swift */; };
+		ATV011B /* SecodConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV011F /* SecodConfiguration.swift */; };
+		ATV012B /* SecondConfigurationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV012F /* SecondConfigurationResponse.swift */; };
+		ATV013B /* VolumeLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV013F /* VolumeLevel.swift */; };
+		ATV014B /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV014F /* Configuration.swift */; };
+		ATV015B /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV015F /* Option.swift */; };
+		ATV016B /* Pairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV016F /* Pairing.swift */; };
+		ATV017B /* PairingNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV017F /* PairingNetwork.swift */; };
+		ATV018B /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV018F /* Secret.swift */; };
+		ATV019B /* RequestDataProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV019F /* RequestDataProtocol.swift */; };
+		ATV020B /* PairingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV020F /* PairingManager.swift */; };
+		ATV021B /* RemoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV021F /* RemoteManager.swift */; };
+		ATV022B /* TLSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV022F /* TLSManager.swift */; };
+		ATV023B /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV023F /* Decoder.swift */; };
+		ATV024B /* Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV024F /* Encoder.swift */; };
+		ATV025B /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV025F /* Logger.swift */; };
+		ATV026B /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV026F /* Result.swift */; };
+		ATV027B /* AndroidTVBoxRemoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATV027F /* AndroidTVBoxRemoteManager.swift */; };
+		ATVR01B /* cert.der in Resources */ = {isa = PBXBuildFile; fileRef = ATVR01F /* cert.der */; };
+		ATVR02B /* cert.p12 in Resources */ = {isa = PBXBuildFile; fileRef = ATVR02F /* cert.p12 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B100 /* TVRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TVRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B101 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B102 /* TVDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDevice.swift; sourceTree = "<group>"; };
+		B103 /* TVRemoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVRemoteService.swift; sourceTree = "<group>"; };
+		B104 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		B105 /* ScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
+		B106 /* ConnectingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectingViewController.swift; sourceTree = "<group>"; };
+		B107 /* RemoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteViewController.swift; sourceTree = "<group>"; };
+		B108 /* RemoteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteButton.swift; sourceTree = "<group>"; };
+		B109 /* SectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionViews.swift; sourceTree = "<group>"; };
+		B110 /* ScanViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViews.swift; sourceTree = "<group>"; };
+		B111 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ATV001F /* CertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/CertManager.swift; sourceTree = "<group>"; };
+		ATV002F /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Commands/DeepLink.swift; sourceTree = "<group>"; };
+		ATV003F /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Commands/Direction.swift; sourceTree = "<group>"; };
+		ATV004F /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Commands/Key.swift; sourceTree = "<group>"; };
+		ATV005F /* KeyPress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Commands/KeyPress.swift; sourceTree = "<group>"; };
+		ATV006F /* CryptoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/CryptoManager.swift; sourceTree = "<group>"; };
+		ATV007F /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Errors.swift; sourceTree = "<group>"; };
+		ATV008F /* AndroidTVConfigurationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/CommandNetwork/AndroidTVConfigurationMessage.swift; sourceTree = "<group>"; };
+		ATV009F /* CommandNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/CommandNetwork/CommandNetwork.swift; sourceTree = "<group>"; };
+		ATV010F /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/CommandNetwork/Ping.swift; sourceTree = "<group>"; };
+		ATV011F /* SecodConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/CommandNetwork/SecodConfiguration.swift; sourceTree = "<group>"; };
+		ATV012F /* SecondConfigurationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/CommandNetwork/SecondConfigurationResponse.swift; sourceTree = "<group>"; };
+		ATV013F /* VolumeLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/CommandNetwork/VolumeLevel.swift; sourceTree = "<group>"; };
+		ATV014F /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/PairingNetwork/Configuration.swift; sourceTree = "<group>"; };
+		ATV015F /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/PairingNetwork/Option.swift; sourceTree = "<group>"; };
+		ATV016F /* Pairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/PairingNetwork/Pairing.swift; sourceTree = "<group>"; };
+		ATV017F /* PairingNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/PairingNetwork/PairingNetwork.swift; sourceTree = "<group>"; };
+		ATV018F /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/PairingNetwork/Secret.swift; sourceTree = "<group>"; };
+		ATV019F /* RequestDataProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/Network/RequestDataProtocol.swift; sourceTree = "<group>"; };
+		ATV020F /* PairingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/PairingManager.swift; sourceTree = "<group>"; };
+		ATV021F /* RemoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/RemoteManager.swift; sourceTree = "<group>"; };
+		ATV022F /* TLSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/TLSManager.swift; sourceTree = "<group>"; };
+		ATV023F /* Decoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/coding/Decoder.swift; sourceTree = "<group>"; };
+		ATV024F /* Encoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/coding/Encoder.swift; sourceTree = "<group>"; };
+		ATV025F /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/misc/Logger.swift; sourceTree = "<group>"; };
+		ATV026F /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor/AndroidTVRemoteControl/misc/Result.swift; sourceTree = "<group>"; };
+		ATV027F /* AndroidTVBoxRemoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidTVBoxRemoteManager.swift; sourceTree = "<group>"; };
+		ATVR01F /* cert.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = cert.der; sourceTree = "<group>"; };
+		ATVR02F /* cert.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = cert.p12; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		C100 = {
+			isa = PBXGroup;
+			children = (
+				C101 /* TVRemote */,
+				C110 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C101 /* TVRemote */ = {
+			isa = PBXGroup;
+			children = (
+				B101 /* AppDelegate.swift */,
+				C102 /* Controllers */,
+				C103 /* Views */,
+				C104 /* Models */,
+				C105 /* Services */,
+				C106 /* Resources */,
+				ATVG00 /* AndroidTVRemoteControl */,
+				B111 /* Info.plist */,
+			);
+			path = TVRemote;
+			sourceTree = "<group>";
+		};
+		C102 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				B105 /* ScanViewController.swift */,
+				B106 /* ConnectingViewController.swift */,
+				B107 /* RemoteViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		C103 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B108 /* RemoteButton.swift */,
+				B109 /* SectionViews.swift */,
+				B110 /* ScanViews.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C104 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B102 /* TVDevice.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C105 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B103 /* TVRemoteService.swift */,
+				ATV027F /* AndroidTVBoxRemoteManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C106 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B104 /* Theme.swift */,
+				ATVR01F /* cert.der */,
+				ATVR02F /* cert.p12 */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C110 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B100 /* TVRemote.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ATVG00 /* AndroidTVRemoteControl */ = {
+			isa = PBXGroup;
+			children = (
+				ATV001F /* CertManager.swift */,
+				ATV002F /* DeepLink.swift */,
+				ATV003F /* Direction.swift */,
+				ATV004F /* Key.swift */,
+				ATV005F /* KeyPress.swift */,
+				ATV006F /* CryptoManager.swift */,
+				ATV007F /* Errors.swift */,
+				ATV008F /* AndroidTVConfigurationMessage.swift */,
+				ATV009F /* CommandNetwork.swift */,
+				ATV010F /* Ping.swift */,
+				ATV011F /* SecodConfiguration.swift */,
+				ATV012F /* SecondConfigurationResponse.swift */,
+				ATV013F /* VolumeLevel.swift */,
+				ATV014F /* Configuration.swift */,
+				ATV015F /* Option.swift */,
+				ATV016F /* Pairing.swift */,
+				ATV017F /* PairingNetwork.swift */,
+				ATV018F /* Secret.swift */,
+				ATV019F /* RequestDataProtocol.swift */,
+				ATV020F /* PairingManager.swift */,
+				ATV021F /* RemoteManager.swift */,
+				ATV022F /* TLSManager.swift */,
+				ATV023F /* Decoder.swift */,
+				ATV024F /* Encoder.swift */,
+				ATV025F /* Logger.swift */,
+				ATV026F /* Result.swift */,
+			);
+			name = AndroidTVRemoteControl;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D100 /* TVRemote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E101 /* Build configuration list for PBXNativeTarget "TVRemote" */;
+			buildPhases = (
+				D101 /* Sources */,
+				D102 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TVRemote;
+			productName = TVRemote;
+			productReference = B100 /* TVRemote.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D200 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					D100 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = E100 /* Build configuration list for PBXProject "TVRemote" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C100;
+			productRefGroup = C110 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D100 /* TVRemote */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D102 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ATVR01B /* cert.der in Resources */,
+				ATVR02B /* cert.p12 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D101 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A101 /* AppDelegate.swift in Sources */,
+				A102 /* TVDevice.swift in Sources */,
+				A103 /* TVRemoteService.swift in Sources */,
+				A104 /* Theme.swift in Sources */,
+				A105 /* ScanViewController.swift in Sources */,
+				A106 /* ConnectingViewController.swift in Sources */,
+				A107 /* RemoteViewController.swift in Sources */,
+				A108 /* RemoteButton.swift in Sources */,
+				A109 /* SectionViews.swift in Sources */,
+				A110 /* ScanViews.swift in Sources */,
+				ATV001B /* CertManager.swift in Sources */,
+				ATV002B /* DeepLink.swift in Sources */,
+				ATV003B /* Direction.swift in Sources */,
+				ATV004B /* Key.swift in Sources */,
+				ATV005B /* KeyPress.swift in Sources */,
+				ATV006B /* CryptoManager.swift in Sources */,
+				ATV007B /* Errors.swift in Sources */,
+				ATV008B /* AndroidTVConfigurationMessage.swift in Sources */,
+				ATV009B /* CommandNetwork.swift in Sources */,
+				ATV010B /* Ping.swift in Sources */,
+				ATV011B /* SecodConfiguration.swift in Sources */,
+				ATV012B /* SecondConfigurationResponse.swift in Sources */,
+				ATV013B /* VolumeLevel.swift in Sources */,
+				ATV014B /* Configuration.swift in Sources */,
+				ATV015B /* Option.swift in Sources */,
+				ATV016B /* Pairing.swift in Sources */,
+				ATV017B /* PairingNetwork.swift in Sources */,
+				ATV018B /* Secret.swift in Sources */,
+				ATV019B /* RequestDataProtocol.swift in Sources */,
+				ATV020B /* PairingManager.swift in Sources */,
+				ATV021B /* RemoteManager.swift in Sources */,
+				ATV022B /* TLSManager.swift in Sources */,
+				ATV023B /* Decoder.swift in Sources */,
+				ATV024B /* Encoder.swift in Sources */,
+				ATV025B /* Logger.swift in Sources */,
+				ATV026B /* Result.swift in Sources */,
+				ATV027B /* AndroidTVBoxRemoteManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E100C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E100R /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E101D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9L526RGFNX;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TVRemote/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = at01.tvremote.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E101R /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9L526RGFNX;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TVRemote/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = at01.tvremote.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E100 /* Build configuration list for PBXProject "TVRemote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E100C /* Debug */,
+				E100R /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E101 /* Build configuration list for PBXNativeTarget "TVRemote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E101D /* Debug */,
+				E101R /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D200 /* Project object */;
+}
