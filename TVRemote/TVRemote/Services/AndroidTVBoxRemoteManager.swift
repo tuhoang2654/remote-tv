@@ -1,6 +1,14 @@
 import Foundation
 
+/// Quản lý ghép đôi và điều khiển Android TV Box
+/// - Đảm bảo chỉ phát .connected khi kênh điều khiển đã hoàn tất handshake
+/// - Cung cấp khả năng reset pairing để buộc nhập mã lại khi cần
 final class AndroidTVBoxRemoteManager {
+    /// Trạng thái kết nối Android TV
+    /// - needsPairingCode: cần người dùng nhập mã ghép đôi
+    /// - paired: đã ghép đôi xong (sẽ tự kết nối lại để điều khiển)
+    /// - connected: đã kết nối và sẵn sàng điều khiển
+    /// - error(String): lỗi kết nối/ghép đôi
     enum State {
         case needsPairingCode
         case paired
@@ -14,11 +22,14 @@ final class AndroidTVBoxRemoteManager {
     private let pairingManager: PairingManager
     private let remoteManager: RemoteManager
     private var host = ""
+    private var isReadyForCommands = false
+
+    private var didPairAtLeastOnce = false // đánh dấu đã qua bước pairing
 
     init?() {
         let cryptoManager = CryptoManager()
 
-        // Early checks for certificate presence to surface clear errors
+        // Kiểm tra sẵn chứng chỉ để có lỗi rõ ràng hơn khi thiếu
         guard Bundle.main.url(forResource: "cert", withExtension: "der") != nil else {
             return nil
         }
@@ -70,18 +81,27 @@ final class AndroidTVBoxRemoteManager {
 
         queue.async { [weak self] in
             guard let self else { return }
+            self.isReadyForCommands = false
+            self.pairingManager.disconnect()
+            self.remoteManager.disconnect()
 
             self.remoteManager.stateChanged = { [weak self] state in
                 guard let self else { return }
 
                 switch state {
                 case .paired:
+                    // Đã có khoá hợp lệ và kênh điều khiển đã hoàn tất handshake.
+                    self.didPairAtLeastOnce = true
+                    self.isReadyForCommands = true
                     DispatchQueue.main.async { self.onStateChanged?(.connected) }
 
                 case .error(.connectionWaitingError), .error(.connectionFailed):
+                    // Kết nối điều khiển thất bại → chuyển sang ghép đôi
+                    self.isReadyForCommands = false
                     self.startPairing()
 
                 case .error(let error):
+                    self.isReadyForCommands = false
                     DispatchQueue.main.async { self.onStateChanged?(.error(error.localizedDescription)) }
 
                 default:
@@ -103,13 +123,63 @@ final class AndroidTVBoxRemoteManager {
         queue.async { [weak self] in
             self?.pairingManager.disconnect()
             self?.remoteManager.disconnect()
+            self?.isReadyForCommands = false
         }
     }
 
-    func send(command: RemoteCommand) {
-        guard let key = androidKey(for: command) else { return }
+    /// Xoá trạng thái ghép đôi (nếu PairingManager/RemoteManager lưu trữ) và buộc ghép đôi lại
+    /// Tuỳ vào triển khai thực tế của PairingManager, có thể cần thêm API để xoá khoá/cert đã lưu
+    func resetPairing() {
         queue.async { [weak self] in
-            self?.remoteManager.send(KeyPress(key))
+            guard let self else { return }
+            self.didPairAtLeastOnce = false
+            self.isReadyForCommands = false
+            // Nếu PairingManager có lưu khoá/cert, thêm lệnh xoá ở đây.
+            self.pairingManager.disconnect()
+            self.remoteManager.disconnect()
+        }
+    }
+
+    /// Gửi lệnh điều khiển; nên gọi sau khi đã nhận .connected
+    func send(command: RemoteCommand, completion: ((Bool) -> Void)? = nil) {
+        guard isReadyForCommands, remoteManager.isReadyForCommands else {
+            completion?(false)
+            DispatchQueue.main.async { [weak self] in
+                self?.onStateChanged?(.error("Kênh điều khiển Android TV chưa sẵn sàng. Hãy kết nối lại hoặc chọn Quên ghép đôi."))
+            }
+            return
+        }
+
+        if let deepLink = androidDeepLink(for: command) {
+            queue.async { [weak self] in
+                self?.remoteManager.send(DeepLink(deepLink)) { ok in
+                    DispatchQueue.main.async {
+                        completion?(ok)
+                        if !ok {
+                            self?.isReadyForCommands = false
+                            self?.onStateChanged?(.error("Không mở được ứng dụng trên Android TV. Hãy kiểm tra app đã được cài trên TV."))
+                        }
+                    }
+                }
+            }
+            return
+        }
+
+        guard let key = androidKey(for: command) else {
+            completion?(false)
+            return
+        }
+
+        queue.async { [weak self] in
+            self?.remoteManager.send(KeyPress(key)) { ok in
+                DispatchQueue.main.async {
+                    completion?(ok)
+                    if !ok {
+                        self?.isReadyForCommands = false
+                        self?.onStateChanged?(.error("Không gửi được lệnh Android TV. Hãy kết nối lại."))
+                    }
+                }
+            }
         }
     }
 
@@ -122,10 +192,13 @@ final class AndroidTVBoxRemoteManager {
                 DispatchQueue.main.async { self.onStateChanged?(.needsPairingCode) }
 
             case .successPaired:
+                self.didPairAtLeastOnce = true
                 DispatchQueue.main.async { self.onStateChanged?(.paired) }
+                // Kết nối lại kênh điều khiển sau khi ghép đôi thành công
                 self.remoteManager.connect(self.host, timeout: 8)
 
             case .error(let error):
+                self.isReadyForCommands = false
                 DispatchQueue.main.async { self.onStateChanged?(.error(error.localizedDescription)) }
 
             default:
@@ -170,6 +243,17 @@ final class AndroidTVBoxRemoteManager {
         case .source: return .KEYCODE_TV_INPUT
         case .record: return .KEYCODE_MEDIA_RECORD
         case .netflix, .youtube, .powerOn, .powerOff, .hdmi1, .hdmi2:
+            return nil
+        }
+    }
+
+    private func androidDeepLink(for command: RemoteCommand) -> String? {
+        switch command {
+        case .youtube:
+            return "https://www.youtube.com/tv"
+        case .netflix:
+            return "https://www.netflix.com"
+        default:
             return nil
         }
     }

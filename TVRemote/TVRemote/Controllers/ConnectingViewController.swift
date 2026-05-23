@@ -84,6 +84,17 @@ class ConnectingViewController: UIViewController {
         btn.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
         return btn
     }()
+    
+    private lazy var forgetPairingButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Quên ghép đôi", for: .normal)
+        btn.titleLabel?.font = Theme.Font.rounded(16, weight: .medium)
+        btn.setTitleColor(Theme.Color.danger, for: .normal)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.addTarget(self, action: #selector(forgetPairingTapped), for: .touchUpInside)
+        btn.isHidden = device.brand != .androidTV // chỉ hiển thị cho Android TV
+        return btn
+    }()
 
     init(device: TVDevice) {
         self.device = device
@@ -104,7 +115,7 @@ class ConnectingViewController: UIViewController {
         view.addSubview(blurView)
         view.addSubview(cardView)
 
-        [tvIconView, titleLabel, deviceNameLabel, ipLabel, activityIndicator, cancelButton].forEach {
+        [tvIconView, titleLabel, deviceNameLabel, ipLabel, activityIndicator, cancelButton, forgetPairingButton].forEach {
             cardView.addSubview($0)
         }
 
@@ -135,12 +146,22 @@ class ConnectingViewController: UIViewController {
 
             cancelButton.topAnchor.constraint(equalTo: activityIndicator.bottomAnchor, constant: 20),
             cancelButton.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            cancelButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -24),
+            cancelButton.bottomAnchor.constraint(equalTo: forgetPairingButton.topAnchor, constant: -8),
+
+            forgetPairingButton.topAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: 8),
+            forgetPairingButton.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
+            forgetPairingButton.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -24),
         ])
     }
 
     @objc private func cancelTapped() {
         TVRemoteService.shared.delegate = nil
+        dismiss(animated: true)
+    }
+    
+    @objc private func forgetPairingTapped() {
+        // Gọi API quên ghép đôi và đóng màn để người dùng kết nối lại
+        TVRemoteService.shared.resetAndroidTVPairing()
         dismiss(animated: true)
     }
 }
@@ -229,6 +250,11 @@ extension ConnectingViewController: TVRemoteServiceDelegate {
 
         // Ensure cancel button is visible for retry/exit
         cancelButton.setTitle("Đóng", for: .normal)
+        
+        // Nếu là Android TV, cho phép người dùng quên ghép đôi để thử lại
+        if device.brand == .androidTV {
+            forgetPairingButton.isHidden = false
+        }
     }
 
     func didReceiveResponse(_ response: String) {}
@@ -240,13 +266,12 @@ extension ConnectingViewController: TVRemoteServiceDelegate {
         let alert = UIAlertController(title: "Android TV Pairing",
                                       message: "Nhập mã 6 ký tự đang hiển thị trên màn hình TV/box.",
                                       preferredStyle: .alert)
-        alert.addTextField { tf in
-            tf.placeholder = "VD: A1B2C3"
-            tf.autocapitalizationType = .allCharacters
-            tf.autocorrectionType = .no
-        }
         alert.addAction(UIAlertAction(title: "Hủy", style: .cancel) { _ in
             TVRemoteService.shared.disconnect()
+        })
+        alert.addAction(UIAlertAction(title: "Quên ghép đôi", style: .destructive) { [weak self] _ in
+            TVRemoteService.shared.resetAndroidTVPairing()
+            self?.titleLabel.text = "Đã xoá ghép đôi"
         })
         alert.addAction(UIAlertAction(title: "Ghép đôi", style: .default) { [weak alert, weak self] _ in
             let code = alert?.textFields?.first?.text ?? ""
@@ -254,6 +279,11 @@ extension ConnectingViewController: TVRemoteServiceDelegate {
             self?.activityIndicator.startAnimating()
             TVRemoteService.shared.submitAndroidTVPairingCode(code)
         })
+        alert.addTextField { tf in
+            tf.placeholder = "VD: A1B2C3"
+            tf.autocapitalizationType = .allCharacters
+            tf.autocorrectionType = .no
+        }
         present(alert, animated: true)
     }
 }

@@ -31,9 +31,17 @@
 		<string>_lgsmartTV._tcp</string>
 		<string>_sony-bravia._tcp</string>
 		<string>_smarttv._tcp</string>
+		<string>_airplay._tcp</string>
+		<string>_raop._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>TV Remote cần truy cập mạng nội bộ để tìm kiếm và kết nối với TV của bạn.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>TV Remote cần dùng microphone để nhận lệnh điều khiển TV bằng giọng nói.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TV Remote cần truy cập thư viện ảnh để bạn chọn ảnh hoặc video cast lên TV.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>TV Remote cần nhận diện giọng nói để chuyển câu lệnh của bạn thành lệnh điều khiển TV.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

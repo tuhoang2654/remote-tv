@@ -556,9 +556,16 @@ final class TVRemoteService: NSObject {
         case .sony:
             sendSonyCommand(command, to: device, completion: completion)
         case .androidTV:
-            androidTVRemoteManager?.send(command: command)
-            delegate?.didReceiveResponse("SENT")
-            completion?(true)
+            guard let manager = androidTVRemoteManager else {
+                completion?(false)
+                return
+            }
+            manager.send(command: command) { [weak self] ok in
+                if ok {
+                    self?.delegate?.didReceiveResponse("SENT")
+                }
+                completion?(ok)
+            }
         case .samsung, .generic:
             sendSamsungCommand(command, completion: completion)
         default:
@@ -569,6 +576,23 @@ final class TVRemoteService: NSObject {
     private func sendSamsungCommand(_ command: RemoteCommand, completion: ((Bool) -> Void)?) {
         guard webSocketTask != nil else {
             completion?(false)
+            return
+        }
+
+        if let appID = samsungAppID(for: command) {
+            let payload: [String: Any] = [
+                "method": "ms.channel.emit",
+                "params": [
+                    "event": "ed.apps.launch",
+                    "to": "host",
+                    "data": [
+                        "appId": appID,
+                        "action_type": "NATIVE_LAUNCH"
+                    ]
+                ]
+            ]
+
+            sendJSONObject(payload, completion: completion)
             return
         }
 
@@ -583,6 +607,17 @@ final class TVRemoteService: NSObject {
         ]
 
         sendJSONObject(payload, completion: completion)
+    }
+
+    private func samsungAppID(for command: RemoteCommand) -> String? {
+        switch command {
+        case .youtube:
+            return "111299001912"
+        case .netflix:
+            return "11101200001"
+        default:
+            return nil
+        }
     }
 
     func sendText(_ text: String, completion: ((Bool) -> Void)? = nil) {
@@ -757,10 +792,59 @@ final class TVRemoteService: NSObject {
                     return
                 }
 
-                var connectedDevice = device
-                connectedDevice.isConnected = true
-                self.currentDevice = connectedDevice
-                self.delegate?.didConnect(to: connectedDevice)
+                self.verifySonyRemoteControl(to: device) { ok, message in
+                    DispatchQueue.main.async {
+                        if ok {
+                            var connectedDevice = device
+                            connectedDevice.isConnected = true
+                            self.currentDevice = connectedDevice
+                            self.delegate?.didConnect(to: connectedDevice)
+                        } else {
+                            self.delegate?.didFailToConnect(
+                                error: message ?? "Sony TV phản hồi được nhưng chưa bật quyền điều khiển. Bật IP Control/Remote Start trên TV hoặc nhập đúng Pre-Shared Key."
+                            )
+                        }
+                    }
+                }
+            }
+        }.resume()
+    }
+
+    private func verifySonyRemoteControl(to device: TVDevice,
+                                         completion: @escaping (Bool, String?) -> Void) {
+        guard let url = sonySystemURL(for: device) else {
+            completion(false, "IP hoặc port Sony không hợp lệ.")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 5
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        setSonyAuthHeader(on: &request, device: device)
+        request.httpBody = """
+        {"method":"getRemoteControllerInfo","params":[],"id":2,"version":"1.0"}
+        """.data(using: .utf8)
+
+        urlSession.dataTask(with: request) { data, response, error in
+            if let error {
+                completion(false, "Không kiểm tra được quyền điều khiển Sony: \(error.localizedDescription)")
+                return
+            }
+
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard (200..<300).contains(statusCode), let data else {
+                let message = data.flatMap { String(data: $0, encoding: .utf8) } ?? "HTTP \(statusCode)"
+                completion(false, "Sony TV chưa cho phép điều khiển IRCC (\(statusCode)). Kiểm tra IP Control và Pre-Shared Key. \(message)")
+                return
+            }
+
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               json["result"] != nil {
+                completion(true, nil)
+            } else {
+                let message = String(data: data, encoding: .utf8) ?? "Phản hồi không hợp lệ"
+                completion(false, "Sony TV không trả về danh sách lệnh điều khiển. \(message)")
             }
         }.resume()
     }
@@ -768,6 +852,11 @@ final class TVRemoteService: NSObject {
     private func sendSonyCommand(_ command: RemoteCommand,
                                  to device: TVDevice,
                                  completion: ((Bool) -> Void)?) {
+        if let title = sonyAppTitle(for: command) {
+            launchSonyApp(named: title, on: device, completion: completion)
+            return
+        }
+
         guard let irccCode = sonyIRCCCode(for: command),
               let url = sonyIRCCURL(for: device) else {
             delegate?.didFailToConnect(error: "Lệnh này chưa được map cho Sony Bravia.")
@@ -803,12 +892,134 @@ final class TVRemoteService: NSObject {
         }.resume()
     }
 
+    private func sonyAppTitle(for command: RemoteCommand) -> String? {
+        switch command {
+        case .youtube:
+            return "youtube"
+        case .netflix:
+            return "netflix"
+        default:
+            return nil
+        }
+    }
+
+    private func launchSonyApp(named title: String,
+                               on device: TVDevice,
+                               completion: ((Bool) -> Void)?) {
+        guard let url = sonyAppControlURL(for: device) else {
+            delegate?.didFailToConnect(error: "IP hoặc port Sony không hợp lệ.")
+            completion?(false)
+            return
+        }
+
+        var listRequest = URLRequest(url: url)
+        listRequest.httpMethod = "POST"
+        listRequest.timeoutInterval = 6
+        listRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        setSonyAuthHeader(on: &listRequest, device: device)
+        listRequest.httpBody = """
+        {"method":"getApplicationList","params":[],"id":10,"version":"1.0"}
+        """.data(using: .utf8)
+
+        urlSession.dataTask(with: listRequest) { [weak self] data, response, error in
+            guard let self else { return }
+
+            if let error {
+                DispatchQueue.main.async {
+                    self.delegate?.didFailToConnect(error: "Không lấy được danh sách ứng dụng Sony: \(error.localizedDescription)")
+                    completion?(false)
+                }
+                return
+            }
+
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard (200..<300).contains(statusCode),
+                  let data,
+                  let appURI = self.sonyApplicationURI(named: title, from: data) else {
+                let message = data.flatMap { String(data: $0, encoding: .utf8) } ?? "HTTP \(statusCode)"
+                DispatchQueue.main.async {
+                    self.delegate?.didFailToConnect(error: "Không tìm thấy \(title.capitalized) trong danh sách ứng dụng Sony. \(message)")
+                    completion?(false)
+                }
+                return
+            }
+
+            self.setActiveSonyApp(uri: appURI, on: device, completion: completion)
+        }.resume()
+    }
+
+    private func sonyApplicationURI(named title: String, from data: Data) -> String? {
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let result = json["result"] as? [Any],
+              let apps = result.first as? [[String: Any]] else {
+            return nil
+        }
+
+        let normalizedTitle = title.lowercased()
+        return apps.first { app in
+            let appTitle = (app["title"] as? String ?? "").lowercased()
+            return appTitle.contains(normalizedTitle)
+        }?["uri"] as? String
+    }
+
+    private func setActiveSonyApp(uri: String,
+                                  on device: TVDevice,
+                                  completion: ((Bool) -> Void)?) {
+        guard let url = sonyAppControlURL(for: device) else {
+            completion?(false)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 6
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        setSonyAuthHeader(on: &request, device: device)
+
+        let payload: [String: Any] = [
+            "method": "setActiveApp",
+            "params": [["uri": uri]],
+            "id": 11,
+            "version": "1.0"
+        ]
+
+        guard let body = try? JSONSerialization.data(withJSONObject: payload) else {
+            completion?(false)
+            return
+        }
+        request.httpBody = body
+
+        urlSession.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                if let error {
+                    self?.delegate?.didFailToConnect(error: "Không mở được ứng dụng Sony: \(error.localizedDescription)")
+                    completion?(false)
+                    return
+                }
+
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+                if (200..<300).contains(statusCode) {
+                    self?.delegate?.didReceiveResponse("SENT")
+                    completion?(true)
+                } else {
+                    let message = data.flatMap { String(data: $0, encoding: .utf8) } ?? "HTTP \(statusCode)"
+                    self?.delegate?.didFailToConnect(error: "Sony TV không mở được ứng dụng (\(statusCode)). \(message)")
+                    completion?(false)
+                }
+            }
+        }.resume()
+    }
+
     private func sonySystemURL(for device: TVDevice) -> URL? {
         sonyURL(for: device, path: "/sony/system")
     }
 
     private func sonyIRCCURL(for device: TVDevice) -> URL? {
         sonyURL(for: device, path: "/sony/IRCC")
+    }
+
+    private func sonyAppControlURL(for device: TVDevice) -> URL? {
+        sonyURL(for: device, path: "/sony/appControl")
     }
 
     private func sonyURL(for device: TVDevice, path: String) -> URL? {
@@ -928,11 +1139,39 @@ final class TVRemoteService: NSObject {
             }
         }
 
-        manager.connect(host: device.ipAddress)
+        // Delay nhẹ để UI có thời gian hiển thị nút "Quên ghép đôi"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+            self?.delegate?.didReceiveResponse("[AndroidTV] Connecting in 0.6s...")
+            manager.connect(host: device.ipAddress)
+        }
     }
 
     func submitAndroidTVPairingCode(_ code: String) {
         androidTVRemoteManager?.sendPairingCode(code)
+    }
+
+    /// Quên ghép đôi Android TV Box và dọn kết nối hiện tại
+    /// - Gọi xuống AndroidTVBoxRemoteManager.resetPairing() (nếu có)
+    /// - Dọn currentDevice/pending để buộc quy trình pairing lại lần sau
+    func resetAndroidTVPairing() {
+        androidTVRemoteManager?.resetPairing()
+        // Dọn trạng thái kết nối hiện tại để lần sau sẽ yêu cầu nhập mã
+        if let device = currentDevice, device.brand == .androidTV {
+            disconnectSilently()
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.didReceiveResponse("[AndroidTV] Đã quên ghép đôi, vui lòng kết nối lại để nhập mã")
+            }
+        } else if let pending = pendingConnectDevice, pending.brand == .androidTV {
+            disconnectSilently()
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.didReceiveResponse("[AndroidTV] Đã quên ghép đôi (pending), vui lòng kết nối lại để nhập mã")
+            }
+        } else {
+            // Không có kết nối Android TV hiện tại; vẫn thông báo cho rõ
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.didReceiveResponse("[AndroidTV] Đã yêu cầu quên ghép đôi")
+            }
+        }
     }
 
     var isConnected: Bool {

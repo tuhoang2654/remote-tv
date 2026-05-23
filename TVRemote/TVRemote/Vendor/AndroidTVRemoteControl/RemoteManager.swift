@@ -22,6 +22,7 @@ public class RemoteManager {
     public var stateChanged: ((RemoteState)->())?
     public var receiveData: ((Data?, Error?)->Void)?
     public var deviceInfo: CommandNetwork.DeviceInfo
+    public private(set) var isReadyForCommands = false
     
     public var logger: Logger?
     private let logPrefix = "Remote: "
@@ -67,6 +68,10 @@ public class RemoteManager {
         if host.isEmpty {
             logger?.errorLog(logPrefix + "host shouldn't be empty!")
         }
+
+        isReadyForCommands = false
+        connection?.stateUpdateHandler = nil
+        connection?.cancel()
         
         let tlsParams: NWParameters
 
@@ -91,31 +96,36 @@ public class RemoteManager {
     
     public func disconnect() {
         logger?.infoLog(logPrefix + "disconnect")
+        isReadyForCommands = false
         connection?.stateUpdateHandler = nil
         connection?.cancel()
         connection = nil
     }
     
-    public func send(_ request: RequestDataProtocol) {
-        send(Data(Encoder.encodeVarint(UInt(request.data.count))), request.data)
+    public func send(_ request: RequestDataProtocol, completion: ((Bool) -> Void)? = nil) {
+        send(Data(Encoder.encodeVarint(UInt(request.data.count))), request.data, completion: completion)
     }
     
-    public func send(_ data: Data, _ nextData: Data? = nil) {
+    public func send(_ data: Data, _ nextData: Data? = nil, completion: ((Bool) -> Void)? = nil) {
         logger?.debugLog(logPrefix + "Sending data: \(Array(data))")
         connection?.send(content: data, completion: .contentProcessed({ [weak self] (error) in
             guard let `self` = self else {
+                completion?(false)
                 return
             }
             
             if let error = error {
                 self.remoteState = .error(.sendDataError(error))
                 self.disconnect()
+                completion?(false)
                 return
             }
             
             self.logger?.debugLog(self.logPrefix + "Success sent")
             if let nextMessage = nextData {
-                self.send(nextMessage)
+                self.send(nextMessage, completion: completion)
+            } else {
+                completion?(true)
             }
         }))
     }
@@ -133,9 +143,11 @@ public class RemoteManager {
             remoteState = .connected
             receive()
         case .failed(let error):
+            isReadyForCommands = false
             remoteState = .error(.connectionFailed(error))
             disconnect()
         case .cancelled:
+            isReadyForCommands = false
             remoteState = .error(.connectionCanceled)
             disconnect()
         default:
@@ -231,6 +243,7 @@ public class RemoteManager {
                 return
             }
             
+            isReadyForCommands = true
             remoteState = .paired(runningApp: secondConfigurationResponse.runAppName)
             receive()
         default:

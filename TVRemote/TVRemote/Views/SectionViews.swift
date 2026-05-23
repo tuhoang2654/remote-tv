@@ -188,6 +188,89 @@ class PowerSectionView: CardSectionView {
     }
 }
 
+// MARK: - Voice Control Section
+class VoiceControlSectionView: CardSectionView {
+    var onMicTapped: (() -> Void)?
+
+    private lazy var micButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "mic.fill"), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = Theme.Color.accent
+        button.layer.cornerRadius = 24
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(micTapped), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Voice Control"
+        label.font = Theme.Font.rounded(15, weight: .semibold)
+        label.textColor = Theme.Color.textPrimary
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private lazy var statusLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Chạm mic rồi nói: tăng âm lượng, qua phải, OK..."
+        label.font = Theme.Font.rounded(12)
+        label.textColor = Theme.Color.textSecondary
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
+
+    private func setupUI() {
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, statusLabel])
+        textStack.axis = .vertical
+        textStack.spacing = 4
+        textStack.translatesAutoresizingMaskIntoConstraints = false
+
+        addSubview(micButton)
+        addSubview(textStack)
+
+        NSLayoutConstraint.activate([
+            micButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            micButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            micButton.widthAnchor.constraint(equalToConstant: 48),
+            micButton.heightAnchor.constraint(equalToConstant: 48),
+
+            textStack.topAnchor.constraint(equalTo: topAnchor, constant: 14),
+            textStack.leadingAnchor.constraint(equalTo: micButton.trailingAnchor, constant: 14),
+            textStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            textStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
+        ])
+    }
+
+    func update(isListening: Bool, text: String) {
+        statusLabel.text = text
+        micButton.backgroundColor = isListening ? Theme.Color.danger : Theme.Color.accent
+        micButton.setImage(UIImage(systemName: isListening ? "stop.fill" : "mic.fill"), for: .normal)
+        if isListening {
+            micButton.addGlow(color: Theme.Color.danger, radius: 10, opacity: 0.45)
+        } else {
+            micButton.removeGlow()
+        }
+    }
+
+    @objc private func micTapped() {
+        HapticManager.impact(.light)
+        onMicTapped?()
+    }
+}
+
 // MARK: - Volume & Channel Section
 class VolumeChannelSectionView: CardSectionView {
     var onCommand: ((RemoteCommand) -> Void)?
@@ -439,6 +522,93 @@ class MediaSectionView: CardSectionView {
         l.textColor = Theme.Color.textTertiary
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
+    }
+}
+
+// MARK: - Cast Section
+class CastSectionView: CardSectionView {
+    var onCastTapped: (() -> Void)?
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
+
+    private func setupUI() {
+        let iconView = UIView()
+        iconView.backgroundColor = Theme.Color.accent.withAlphaComponent(0.16)
+        iconView.layer.cornerRadius = Theme.Radius.md
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+
+        let icon = UIImageView(image: UIImage(systemName: "airplayvideo"))
+        icon.tintColor = Theme.Color.accentLight
+        icon.contentMode = .scaleAspectFit
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        iconView.addSubview(icon)
+
+        let titleLabel = UILabel()
+        titleLabel.text = "Screen Mirroring"
+        titleLabel.font = Theme.Font.rounded(15, weight: .semibold)
+        titleLabel.textColor = Theme.Color.textPrimary
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = "Photo & Video Cast"
+        subtitleLabel.font = Theme.Font.rounded(12, weight: .medium)
+        subtitleLabel.textColor = Theme.Color.textSecondary
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        textStack.axis = .vertical
+        textStack.spacing = 3
+        textStack.translatesAutoresizingMaskIntoConstraints = false
+
+        let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevron.tintColor = Theme.Color.textTertiary
+        chevron.translatesAutoresizingMaskIntoConstraints = false
+
+        let button = UIControl()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(castTapped), for: .touchUpInside)
+
+        [iconView, textStack, chevron, button].forEach { addSubview($0) }
+
+        NSLayoutConstraint.activate([
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            iconView.topAnchor.constraint(equalTo: topAnchor, constant: 14),
+            iconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
+            iconView.widthAnchor.constraint(equalToConstant: 50),
+            iconView.heightAnchor.constraint(equalToConstant: 50),
+
+            icon.centerXAnchor.constraint(equalTo: iconView.centerXAnchor),
+            icon.centerYAnchor.constraint(equalTo: iconView.centerYAnchor),
+            icon.widthAnchor.constraint(equalToConstant: 26),
+            icon.heightAnchor.constraint(equalToConstant: 24),
+
+            textStack.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 14),
+            textStack.centerYAnchor.constraint(equalTo: iconView.centerYAnchor),
+            textStack.trailingAnchor.constraint(lessThanOrEqualTo: chevron.leadingAnchor, constant: -12),
+
+            chevron.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            chevron.centerYAnchor.constraint(equalTo: iconView.centerYAnchor),
+            chevron.widthAnchor.constraint(equalToConstant: 12),
+            chevron.heightAnchor.constraint(equalToConstant: 20),
+
+            button.topAnchor.constraint(equalTo: topAnchor),
+            button.leadingAnchor.constraint(equalTo: leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+    }
+
+    @objc private func castTapped() {
+        HapticManager.impact(.light)
+        onCastTapped?()
     }
 }
 
